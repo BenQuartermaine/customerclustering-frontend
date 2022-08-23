@@ -57,3 +57,15 @@ pypi:
 
 streamlit_run:
 	streamlit run app.py
+
+### DOCKER 
+# Build an image whenever the model changes
+build_docker_image:
+	docker build --tag asia.gcr.io/wagon-le-8888/customerclustering-frontend . 
+
+docker_run:
+	docker run -e PORT=8002 -p 3000:8002 asia.gcr.io/wagon-le-8888/customerclustering-frontend
+
+# Hop inside my shell
+docker_interactive:
+	docker run -e PORT=8001 -p 3000:8001 -it asia.gcr.io/wagon-le-8888/customerclustering-frontend sh

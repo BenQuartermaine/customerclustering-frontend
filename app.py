@@ -1,29 +1,39 @@
 import streamlit as st
 import requests
+import pandas as pd
+
+df = pd.read_csv('raw_data/td.csv', index_col = [0])
 
 '''
 # Customerclustering frontend
-
-### TODO
-1. Add csv data to frontend repo
-2. Take in a user ID
-3. Filter the CSV data to get that users features
-4. Submit the row(s) to the predict API
-5. Display the prediction
-
-### QUESTIONS:
-1. If we use a CSV and a new user becomes apart of the data set, how will the aggrgate displays update overtime?
-2. On page load, should a predict call happen to be able to display the clusters?
-3. How do we set up the mechanism to continuously update the model (is it done by periodically querying the production database and updating the frontend CSV?)
 '''
 
+user_id = st.text_input('Search User ID')
+
+# Hard coded
+
+# user_ids = ['6e6b0e01-4a29-4724-a781-5d6a0d72a213', '6037d38d-d098-4f68-be8c-49b7131b8116']
+user_ids = user_id.replace(' ', '').split(',')
+print("###########", user_ids)
+df_filtered = df[df['userID'].isin(user_ids)]
+
+
+if len(df_filtered) > 0:
+    params = { key: list(val.fillna('*')) for key, val in dict(df_filtered).items() }
+    req = dict(passengers = params)
+
+    url = "http://localhost:3001/predict"
+    prediction = requests.post(url, json = req).json()
+    prediction
+else:
+    '''
+    Waiting waiting
+    '''
+
 '''
-### Test API
+1. Create docker file, include all the things you need and the path to the raw data
+2. Cmd will be running streamlit
+
 '''
 
-url = 'http://localhost:8001/'
-resp = requests.get('http://localhost:8001/').json()
 
-if url == 'http://localhost:8001/':
-
-    resp

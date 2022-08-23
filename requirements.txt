@@ -5,16 +5,7 @@ twine
 wheel>=0.29
 
 # data science
-numpy
 pandas
-scikit-learn
-
-# tests/linter
-black
-coverage
-flake8
-pytest
-yapf
 
 # frontend
 streamlit
