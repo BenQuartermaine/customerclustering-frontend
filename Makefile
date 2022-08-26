@@ -64,7 +64,7 @@ build_docker_image:
 	docker build --tag asia.gcr.io/wagon-le-8888/customerclustering-frontend . 
 
 docker_run:
-	docker run -e PORT=8002 -p 3000:8002 asia.gcr.io/wagon-le-8888/customerclustering-frontend
+	docker run -e PORT=8000 -p 8000:8000 asia.gcr.io/wagon-le-8888/customerclustering-frontend
 
 # Hop inside my shell
 docker_interactive:
