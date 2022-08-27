@@ -10,3 +10,4 @@ pandas
 
 # frontend
 streamlit
+python-dotenv
