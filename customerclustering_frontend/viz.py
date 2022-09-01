@@ -1,25 +1,26 @@
 import io
 import pandas as pd
-import math
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
+from app import *
 from sklearn import set_config; set_config(display='diagram')
 
 class GetViz:
+    def __init__(self, df):
+        # Import data only once
+
+        self.df = df
 
     def get_df(self):
         def cluster_transform(x):
-            if math.isnan(x) is True:
-                return x
-            else:
-                return f"cluster {str(int(x)+1)}"
+            return f"cluster {str(int(x)+1)}"
 
         #get data from the csv file with the label information
-        cluster_df = pd.read_csv("raw_data/pca.csv",index_col=[0])
-        cluster_df = cluster_df[cluster_df['label'] < 6]
-        cluster_df['label'] = cluster_df['label'].apply(cluster_transform)
-        feature_df = cluster_df.drop(columns=['label'])
+        cluster_df = self.df
+        cluster_df = cluster_df[cluster_df['cluster_id'] < 6]
+        cluster_df['cluster_id'] = cluster_df['cluster_id'].apply(cluster_transform)
+        feature_df = cluster_df.drop(columns=['cluster_id','userID'])
         return cluster_df, feature_df
 
     def get_feature_cat(self):
@@ -47,14 +48,14 @@ class GetViz:
 
         #create df for different feature categories to help with visualisation
         num_features_df = cluster_df[num_columns]
-        num_features_df['label'] = cluster_df['label']
+        num_features_df['cluster_id'] = cluster_df['cluster_id']
 
         cat_features_df = cluster_df[cat_columns]
-        cat_features_df['label'] = cluster_df['label']
+        cat_features_df['cluster_id'] = cluster_df['cluster_id']
 
         #calculate and consolidate all kmeans in one dataframe
-        num_kmean_df = round(num_features_df.groupby('label').mean().transpose(), 2)
-        cat_kmean_df = cat_features_df.groupby('label')[cat_columns].agg(pd.Series.mode).transpose()
+        num_kmean_df = round(num_features_df.groupby('cluster_id').mean().transpose(), 2)
+        cat_kmean_df = cat_features_df.groupby('cluster_id')[cat_columns].agg(pd.Series.mode).transpose()
         kmean_df = num_kmean_df.append(cat_kmean_df)
         return kmean_df
 
@@ -65,7 +66,8 @@ class GetViz:
 
         #viz for num features using boxplot
         if feature in list(num_columns):
-            boxplot = sns.boxplot(x = 'label', y = feature, hue = 'label', data = cluster_df, palette='bright'\
+            boxplot = sns.boxplot(x = 'cluster_id', y = feature, hue = 'cluster_id', \
+                data = cluster_df.sample(200), palette='bright'\
                     ,dodge = True)
 
             return boxplot
@@ -74,7 +76,7 @@ class GetViz:
         else:
             cluster_df['count'] = 1
             heat_df = pd.pivot_table(cluster_df, values='count', index=[feature],
-                                columns=['label'], aggfunc=np.sum, fill_value=0)
+                                columns=['cluster_id'], aggfunc=np.sum, fill_value=0)
 
             for col in heat_df.columns:
                 total = heat_df[col].sum()
@@ -87,9 +89,10 @@ class GetViz:
         '''Returns a scatterplot'''
         cluster_df, feature_df = self.get_df()
 
-        cluster_df_filtered = cluster_df[cluster_df['label']== cluster]
+        cluster_df_filtered = cluster_df[cluster_df['cluster_id']== cluster]
         scatter = sns.scatterplot(data = cluster_df_filtered, x = feature1, y = feature2, palette='bright')
         return scatter
 
 if __name__ == "__main__":
-    print(GetViz().get_Kmeans())
+    df = pd.read_csv('raw_data/pca.csv')
+    print(GetViz(df).get_Kmeans())

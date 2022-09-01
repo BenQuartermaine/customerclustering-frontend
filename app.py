@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import os
 from dotenv import load_dotenv, find_dotenv
-from customerclustering_frontend.viz import GetViz
+from customerclustering_frontend.viz import *
 from customerclustering_frontend.check_password import check_password
 from customerclustering_frontend.styles import card_style, margin_bottom, line_style, margin_y
 import matplotlib.pyplot as plt
@@ -20,25 +20,26 @@ if check_password(app_password):
 
     @st.cache
     def get_data():
-        df = pd.read_csv('raw_data/pca.csv', index_col = [0])
+        df = pd.read_csv('raw_data/pca.csv')
         return df
-    
 
-    df_means = GetViz().get_Kmeans()
-    # df_means = df_means.loc[['account_age', 'docPerYear', 'docOnAusmedPerYear', 'subscribe_days', 'minPerYear', 'numCompletedFromQueue', 'minCompletedFromQueue', 'activated']]
     df = get_data()
-    
+
+    df_means = GetViz(df).get_Kmeans()
+    # df_means = df_means.loc[['account_age', 'docPerYear', 'docOnAusmedPerYear', 'subscribe_days', 'minPerYear', 'numCompletedFromQueue', 'minCompletedFromQueue', 'activated']]
+
+
     clusters = list(df_means.columns)
     print("##########################",clusters, "#######################")
     '''
     ## Cluster Overview
     Compare how cluster means compare to each other
     '''
-   
+
     mean_top_columns = st.columns(3)
 
     for index, (key, value) in enumerate(df_means.loc[:, :clusters[2]].items()):
-        
+
         # mean_columns[index].write(f"<style>{card_style}</style><div class='card'>{key}</div>", unsafe_allow_html=True)
         mean_top_columns[index].write(f"<style>{margin_bottom}</style><h4>{key}</h4>", unsafe_allow_html=True)
 
@@ -65,25 +66,25 @@ if check_password(app_password):
 
 
     # take in the feature name
-    
-    
+
+
     # write the plot to the file
 
     def get_features():
         features = df.columns
         return features
     features = get_features()
-    
+
     x = st.selectbox(f'Select a feature', features)
-    # @st.cache
-    # def get_clusters_one_feature():
-    #     fig, ax = plt.subplots()
-    #     one_plot = GetViz().clusters_one_feature(x)
-    #     print('##############', "Feature 1 preparing plot")
-    #     return fig
-    # fig = get_clusters_one_feature()
-    # st.pyplot(fig)
-    # print('##############', "Feature 1 Plot prepared")
+    @st.cache
+    def get_clusters_one_feature():
+        fig, ax = plt.subplots()
+        one_plot = GetViz(df).clusters_one_feature(x)
+        print('##############', "Feature 1 preparing plot")
+        return fig
+    fig = get_clusters_one_feature()
+    st.pyplot(fig)
+    print('##############', "Feature 1 Plot prepared")
 
 
     '''
@@ -94,13 +95,13 @@ if check_password(app_password):
     clust_ind = individual_cols[0].selectbox(f'Select Cluster', clusters)
     x_ind = individual_cols[1].selectbox(f'Select x feature', features, key = [1])
     y_ind = individual_cols[2].selectbox(f'Select y feature', features, key = [2])
-    
+
     fig, ax = plt.subplots()
-    two_plot = GetViz().cluster_two_feature(clust_ind, x_ind, y_ind)
+    two_plot = GetViz(df).cluster_two_feature(clust_ind, x_ind, y_ind)
     print('##############', "Preparing plot")
     st.pyplot(fig)
     print('##############', "Plot prepared")
-    
+
 
 
     '''
@@ -128,4 +129,3 @@ if check_password(app_password):
     #     '''
 else:
     '''Nope ❌'''
-
