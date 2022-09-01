@@ -23,9 +23,14 @@ if check_password(app_password):
         df = pd.read_csv('raw_data/pca.csv')
         return df
 
-    df = get_data()
+    @st.cache
+    def get_Viz_data(df):
+        return GetViz(df)
 
-    df_means = GetViz(df).get_Kmeans()
+    df = get_data()
+    viz = get_Viz_data(df.sample(200))
+
+    df_means = viz.get_Kmeans()
     # df_means = df_means.loc[['account_age', 'docPerYear', 'docOnAusmedPerYear', 'subscribe_days', 'minPerYear', 'numCompletedFromQueue', 'minCompletedFromQueue', 'activated']]
 
 
@@ -70,16 +75,16 @@ if check_password(app_password):
 
     # write the plot to the file
 
-    def get_features():
+    def get_features(df):
         features = df.columns
         return features
-    features = get_features()
+    features = get_features(df)
 
     x = st.selectbox(f'Select a feature', features)
     @st.cache
     def get_clusters_one_feature():
         fig, ax = plt.subplots()
-        one_plot = GetViz(df).clusters_one_feature(x)
+        one_plot = viz.clusters_one_feature(x)
         print('##############', "Feature 1 preparing plot")
         return fig
     fig = get_clusters_one_feature()
@@ -97,7 +102,7 @@ if check_password(app_password):
     y_ind = individual_cols[2].selectbox(f'Select y feature', features, key = [2])
 
     fig, ax = plt.subplots()
-    two_plot = GetViz(df).cluster_two_feature(clust_ind, x_ind, y_ind)
+    two_plot = viz.cluster_two_feature(clust_ind, x_ind, y_ind)
     print('##############', "Preparing plot")
     st.pyplot(fig)
     print('##############', "Plot prepared")
