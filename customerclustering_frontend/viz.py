@@ -60,25 +60,28 @@ class GetViz:
     def clusters_one_feature(self, feature):
 
         #viz for num features using boxplot
-        if feature in list(self.num_columns):
-            boxplot = sns.boxplot(x = 'cluster_id', y = feature, hue = 'cluster_id', \
-                data = self.cluster_df.sample(200), palette='bright'\
-                    ,dodge = True)
 
-            return boxplot
+        if feature in list(self.num_columns):
+            print("boxplot is running")
+            fig, ax = plt.subplots(figsize = (3,3) )
+            sns.boxplot(x = 'cluster_id', y = feature, hue = 'cluster_id', \
+                data = self.cluster_df.sample(200), palette='bright', ax=ax)
+
+            return fig
 
         #viz for cat features using heatmap
         else:
-
+            print("heatmap is running")
+            fig, ax = plt.subplots(figsize = (3,3) )
             heat_df = pd.pivot_table(self.cluster_df.sample(200), values='count', index=[feature],
                                 columns=['cluster_id'], aggfunc=np.sum, fill_value=0)
 
             for col in heat_df.columns:
                 total = heat_df[col].sum()
                 heat_df[col] = round(heat_df[col]/total,2)
-            heatmap = sns.heatmap(heat_df, annot = True)
+            sns.heatmap(heat_df, annot = True, ax = ax)
 
-            return heatmap
+            return fig
 
     def cluster_two_feature(self,cluster,feature1,feature2):
         '''Returns a scatterplot'''

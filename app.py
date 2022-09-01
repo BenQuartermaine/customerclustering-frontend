@@ -83,8 +83,8 @@ if check_password(app_password):
     x = st.selectbox(f'Select a feature', features)
     @st.cache
     def get_clusters_one_feature():
-        fig, ax = plt.subplots()
-        one_plot = viz.clusters_one_feature(x)
+        # fig, ax = plt.subplots()
+        fig = viz.clusters_one_feature(x)
         print('##############', "Feature 1 preparing plot")
         return fig
     fig = get_clusters_one_feature()
