@@ -1,3 +1,4 @@
+from multiprocessing.spawn import import_main_path
 import streamlit as st
 import requests
 import pandas as pd
@@ -16,7 +17,6 @@ load_dotenv(find_dotenv())
 app_password = os.environ.get("APP_PASSWORD")
 
 if check_password(app_password):
-    print("########################## #######################")
 
     @st.cache(allow_output_mutation=True)
     def get_data():
@@ -25,7 +25,6 @@ if check_password(app_password):
 
     df = get_data()
     df_viz = GetViz(df)
-    print("THIS IS VIZ##############", df_viz.cluster_df, df_viz.feature_df)
     
     #   important columns
     important_columns = ['minPerYear', 
@@ -100,24 +99,54 @@ if check_password(app_password):
 
 
     '''
-    ## Search Individual User(s)
+    ## Search Individual User
     Search for an individual user or set of users to get back what cluster they are a part of
     '''
+    
+    imp_cols = ['minPerYear', 
+                'GoalsPerYear', 
+                #  'account_age',
+                'numQueuedPerYear', 
+                'minCompletedOnelinePerYear', 
+                'docOnAusmedPerYear',
+                'learnFromAusmedRatio_min', 
+                'subscribe_days', 'cluster_id', 'userID']
 
-    get_user_ids = st.text_input('Search User ID', "Enter one or more user IDs seperated by commas")
-    # user_ids = ['6e6b0e01-4a29-4724-a781-5d6a0d72a213', '6037d38d-d098-4f68-be8c-49b7131b8116']
+    get_user_ids = st.text_input('Search User ID')
+    # user_ids = ['06c50aef-c911-4efb-baf0-73aab6d64aaa', '6037d38d-d098-4f68-be8c-49b7131b8116']
     user_ids = get_user_ids.replace(' ', '').split(',')
     print("###########", user_ids, "###########",)
     df_filtered = df[df['userID'].isin(user_ids)]
-
-
+    individual_cluster_id = df_filtered.iloc[0]['cluster_id']
+    df_filt_important = round(df_filtered[imp_cols], 2).transpose()
+    header_row = df_filt_important.loc['userID']
+    df_filt_important.columns = header_row
+    
+    print(df_means.loc[:, clusters[individual_cluster_id]])
+    
     if len(df_filtered) > 0:
-        params = { key: list(val.fillna('*')) for key, val in dict(df_filtered).items() }
-        req = dict(passengers = params)
+        individual_user_cols = st.columns(2)
+      
+        for index, (key, value) in enumerate(df_filt_important.items()):
+            individual_user_cols[0].write(f"<style>{margin_bottom}</style><h4>User</h4>", unsafe_allow_html=True)
 
-        url = "http://localhost:3001/predict"
-        prediction = requests.post(url, json = req).json()
-        prediction
+            for k, v in value.items():
+                item = f'<style>{line_style}</style><div class="line"><div>{k}</div><div>{v}</div></div>'
+                individual_user_cols[0].write(item, unsafe_allow_html=True)
+        
+            individual_user_cols[1].write(f"<style>{margin_bottom}</style><h4>Cluster {individual_cluster_id}</h4>", unsafe_allow_html=True)
+        for key, value in enumerate(df_means.loc[:, clusters[individual_cluster_id]].items()):
+            item = f'<style>{line_style}</style><div class="line"><div>{value[0]}</div><div>{value[1]}</div></div>'
+            individual_user_cols[1].write(item, unsafe_allow_html=True)
+
+            # for k, v in value.items():
+
+
+        # params = { key: list(val.fillna('*')) for key, val in dict(df_filtered).items() }
+        # req = dict(passengers = params)
+
+        # url = "http://asia.gcr.io/wagon-le-8888/customerclustering-api/predict"
+        # prediction = requests.post(url, json = req).json()
     else:
         '''
         Enter a valid user ID to see what cluster they are a part of

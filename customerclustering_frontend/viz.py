@@ -60,7 +60,6 @@ class GetViz:
         #viz for num features using boxplot
 
         if feature in list(self.num_columns):
-            print("boxplot is running")
             fig, ax = plt.subplots(figsize = (3,3) )
             sns.boxplot(x = 'cluster_id', y = feature, hue = 'cluster_id', \
                 data = self.cluster_df.sample(200), palette='bright', ax=ax)
