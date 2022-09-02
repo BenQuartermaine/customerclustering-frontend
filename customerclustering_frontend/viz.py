@@ -14,13 +14,11 @@ class GetViz:
         self.cat_columns, self.num_columns = self.get_feature_cat()
 
     def get_cluster_df(self,cluster_df):
-        def cluster_transform(x):
-            return f"cluster {str(int(x)+1)}"
+        # def cluster_transform(x):
+        #     return f"cluster {str(int(x)+1)}"
 
-        #get data from the csv file with the label information
-
-        cluster_df = cluster_df[cluster_df['cluster_id'] < 6]
-        cluster_df['cluster_id'] = cluster_df['cluster_id'].apply(cluster_transform)
+        # get data from the csv file with the label information
+        # cluster_df.loc[:,'cluster_id'] = cluster_df['cluster_id'].apply(cluster_transform)
         feature_df = cluster_df.drop(columns=['cluster_id','userID'])
         cluster_df['count'] = 1
         return cluster_df, feature_df
