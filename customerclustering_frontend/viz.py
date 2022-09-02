@@ -83,10 +83,11 @@ class GetViz:
 
     def cluster_two_feature(self,cluster,feature1,feature2):
         '''Returns a scatterplot'''
+        fig, ax = plt.subplots(figsize = (3,3) )
 
         cluster_df_filtered = self.cluster_df[self.cluster_df['cluster_id']== cluster]
         scatter = sns.scatterplot(data = cluster_df_filtered, x = feature1, y = feature2, palette='bright')
-        return scatter
+        return fig
 
 if __name__ == "__main__":
     df = pd.read_csv('raw_data/pca.csv')

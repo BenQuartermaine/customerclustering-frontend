@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-st.set_page_config(page_title="Customer Clustering", page_icon="👯‍♀️",layout="centered")
 import pandas as pd
 import os
 from dotenv import load_dotenv, find_dotenv
@@ -9,11 +8,12 @@ from customerclustering_frontend.check_password import check_password
 from customerclustering_frontend.styles import card_style, margin_bottom, line_style, margin_y
 import matplotlib.pyplot as plt
 
+st.set_page_config(page_title="Customer Clustering", page_icon="👯‍♀️",layout="centered")
 
 
+st.session_state["password"] = ''
 load_dotenv(find_dotenv())
 app_password = os.environ.get("APP_PASSWORD")
-
 
 if check_password(app_password):
     print("########################## #######################")
@@ -76,7 +76,6 @@ if check_password(app_password):
     features = df.columns
 
     x = st.selectbox(f'Select a feature', important_columns)
-    fig, ax = plt.subplots(figsize=(3,3))
     fig = df_viz.clusters_one_feature(x)
     print('##############', "Feature 1 preparing plot")
     st.pyplot(fig)
@@ -89,8 +88,8 @@ if check_password(app_password):
     '''
     individual_cols = st.columns(3)
     clust_ind = individual_cols[0].selectbox(f'Select Cluster', clusters)
-    x_ind = individual_cols[1].selectbox(f'Select x feature', features, key = [1])
-    y_ind = individual_cols[2].selectbox(f'Select y feature', features, key = [2])
+    x_ind = individual_cols[1].selectbox(f'Select x feature', important_columns, key = [1])
+    y_ind = individual_cols[2].selectbox(f'Select y feature', important_columns, key = [2])
 
     fig, ax = plt.subplots()
     fig = df_viz.cluster_two_feature(clust_ind, x_ind, y_ind)

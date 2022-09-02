@@ -3,7 +3,7 @@ import streamlit as st
 def check_password(app_password):
     """Returns `True` if the user had the correct password."""
 
-    st.session_state["password"] = ''
+    
 
 
     def password_entered():
