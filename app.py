@@ -117,14 +117,14 @@ if check_password(app_password):
     user_ids = get_user_ids.replace(' ', '').split(',')
     print("###########", user_ids, "###########",)
     df_filtered = df[df['userID'].isin(user_ids)]
-    individual_cluster_id = df_filtered.iloc[0]['cluster_id']
-    df_filt_important = round(df_filtered[imp_cols], 2).transpose()
-    header_row = df_filt_important.loc['userID']
-    df_filt_important.columns = header_row
-    
-    print(df_means.loc[:, clusters[individual_cluster_id]])
-    
     if len(df_filtered) > 0:
+        individual_cluster_id = df_filtered.iloc[0]['cluster_id']
+        df_filt_important = round(df_filtered[imp_cols], 2).transpose()
+        header_row = df_filt_important.loc['userID']
+        df_filt_important.columns = header_row
+        
+        print(df_means.loc[:, clusters[individual_cluster_id]])
+    
         individual_user_cols = st.columns(2)
       
         for index, (key, value) in enumerate(df_filt_important.items()):
@@ -139,14 +139,14 @@ if check_password(app_password):
             item = f'<style>{line_style}</style><div class="line"><div>{value[0]}</div><div>{value[1]}</div></div>'
             individual_user_cols[1].write(item, unsafe_allow_html=True)
 
-            # for k, v in value.items():
 
 
         # params = { key: list(val.fillna('*')) for key, val in dict(df_filtered).items() }
         # req = dict(passengers = params)
 
-        # url = "http://asia.gcr.io/wagon-le-8888/customerclustering-api/predict"
+        # url = "https://customerclustering-api-d7yqapat5q-de.a.run.app/predict"
         # prediction = requests.post(url, json = req).json()
+        # prediction
     else:
         '''
         Enter a valid user ID to see what cluster they are a part of

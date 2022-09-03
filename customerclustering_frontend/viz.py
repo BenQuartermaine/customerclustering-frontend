@@ -4,7 +4,6 @@ import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 from app import *
-from sklearn import set_config; set_config(display='diagram')
 
 class GetViz:
     def __init__(self, df):

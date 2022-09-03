@@ -7,6 +7,9 @@ requests
 
 # data science
 pandas
+seaborn
+numpy
+matplotlib
 
 # frontend
 streamlit

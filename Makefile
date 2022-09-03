@@ -64,8 +64,20 @@ build_docker_image:
 	docker build --tag asia.gcr.io/wagon-le-8888/customerclustering-frontend . 
 
 docker_run:
-	docker run -e PORT=8000 -p 8000:8000 asia.gcr.io/wagon-le-8888/customerclustering-frontend
+	set -o allexport; source .env; set +o allexport;
+	docker run -e PORT=8000 -e APP_PASSWORD=${APP_PASSWORD} -p 8000:8000 asia.gcr.io/wagon-le-8888/customerclustering-frontend
 
 # Hop inside my shell
 docker_interactive:
 	docker run -e PORT=8001 -p 3000:8001 -it asia.gcr.io/wagon-le-8888/customerclustering-frontend sh
+
+# Pushes to container registry (gcp)
+docker_push:
+	docker push asia.gcr.io/wagon-le-8888/customerclustering-frontend  
+
+# gcloud_deploy:
+# 	gcloud run deploy --image asia.gcr.io/wagon-le-8888/customerclustering-frontend --region asia-east1
+
+gcloud_deploy:
+	set -o allexport; source .env; set +o allexport;
+	gcloud run deploy --image asia.gcr.io/wagon-le-8888/customerclustering-frontend --update-env-vars APP_PASSWORD=${APP_PASSWORD} --region asia-east1 --timeout=5m
